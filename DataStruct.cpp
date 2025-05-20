@@ -1,4 +1,7 @@
 #include "DataStruct.hpp"
+
+#include <iomanip>
+
 #include "StreamGuard.hpp"
 
 
@@ -186,11 +189,17 @@ std::ostream& holodilov::operator<<(std::ostream& os, const DataStruct& data)
         return os;
     }
     StreamGuard streamGuard(os);
+
     os << "(:";
-    os << manipulator::KeyNameIO{ '1' } << " " << manipulator::UllOctIO{ data.key1 } << ":";
-    os << manipulator::KeyNameIO{ '2' } << " " << manipulator::CmpLspIO{ data.key2 } << ":";
-    os << manipulator::KeyNameIO{ '3' } << " " << manipulator::StringIO{ data.key3 } << ":)\n";
-    os << "(:key1 " << data.key1 << ":key2 " << data.key2 << ":key3 " << data.key3 << ":)\n";
+    os << manipulator::KeyNameIO{ '1' } << " " << std::oct << data.key1 << ":";
+    os << manipulator::KeyNameIO{ '2' } << " #c(" << std::setprecision(1) << data.key2.real() << " " << data.key2.imag() << "):";
+    os << manipulator::KeyNameIO{ '3' } << " \"" << data.key3 << "\":)\n";
+
+    // os << "(:";
+    // os << manipulator::KeyNameIO{ '1' } << " " << manipulator::UllOctIO{ data.key1 } << ":";
+    // os << manipulator::KeyNameIO{ '2' } << " " << manipulator::CmpLspIO(data.key2) << ":";
+    // os << manipulator::KeyNameIO{ '3' } << " " << manipulator::StringIO{ data.key3 } << ":)\n";
+    // os << "(:key1 " << data.key1 << ":key2 " << data.key2 << ":key3 " << data.key3 << ":)\n";
     return os;
 }
 
