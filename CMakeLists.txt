@@ -7,5 +7,6 @@ include_directories(.)
 
 add_executable(t2 main.cpp
         DataStruct.cpp
-        DataStruct.h
-        StreamGuard.h)
+        DataStruct.hpp
+        StreamGuard.cpp
+        StreamGuard.hpp)
