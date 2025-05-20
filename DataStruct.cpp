@@ -1,9 +1,6 @@
-#include "DataStruct.hpp"
-
 #include <iomanip>
-
 #include "StreamGuard.hpp"
-
+#include "DataStruct.hpp"
 
 std::istream& holodilov::operator>>(std::istream& is, DataStruct& dataStruct)
 {
@@ -124,10 +121,6 @@ std::istream& holodilov::operator>>(std::istream& is, manipulator::UllOctIO& ull
             return is;
         }
     }
-
-    manipulator::CharIO uCharIO{ 'u' };
-    manipulator::CharIO lCharIO{ 'l' };
-    is >> uCharIO >> lCharIO >> lCharIO;
     ullOctIO.value = ull;
     return is;
 }
@@ -197,9 +190,9 @@ std::ostream& holodilov::operator<<(std::ostream& os, const DataStruct& data)
     StreamGuard streamGuard(os);
 
     os << "(:";
-    os << manipulator::KeyNameIO{ '1' } << " " << std::oct << data.key1 << ":";
-    os << manipulator::KeyNameIO{ '2' } << " #c(" << std::setprecision(1) << data.key2.real() << " " << data.key2.imag() << "):";
-    os << manipulator::KeyNameIO{ '3' } << " \"" << data.key3 << "\":)\n";
+    os << manipulator::KeyNameIO{ '1' } << " 0" << data.key1 << ":";
+    os << manipulator::KeyNameIO{ '2' } << " #c(" << std::setprecision(1) << std::fixed << data.key2.real() << " " << data.key2.imag() << "):";
+    os << manipulator::KeyNameIO{ '3' } << " \"" << data.key3 << "\":)";
     return os;
 }
 
@@ -223,7 +216,7 @@ bool holodilov::operator<(const DataStruct& lhs, const DataStruct& rhs)
     }
     if (lhs.key2 != rhs.key2)
     {
-        return abs(lhs.key2) < abs(rhs.key2);
+        return std::abs(lhs.key2) < std::abs(rhs.key2);
     }
     return lhs.key3.length() < rhs.key3.length();
 }
