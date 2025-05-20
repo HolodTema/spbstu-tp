@@ -11,7 +11,7 @@ namespace holodilov
   {
   public:
     unsigned long long key1;
-    std::complex<double> key2;
+    std::complex< double > key2;
     std::string key3;
   };
 
@@ -34,7 +34,7 @@ namespace holodilov
 
     struct CmpLspIO
     {
-      std::complex<double>& value;
+      std::complex< double >& value;
     };
 
     struct StringIO
@@ -42,7 +42,6 @@ namespace holodilov
       std::string& value;
     };
   }
-
 
   std::istream& operator>>(std::istream& is, DataStruct& dataStruct);
   std::istream& operator>>(std::istream& is, manipulator::CharIO& charIO);
@@ -53,7 +52,6 @@ namespace holodilov
 
   std::ostream& operator<<(std::ostream& os, const DataStruct& dataStruct);
   std::ostream& operator<<(std::ostream& os, const manipulator::KeyNameIO& keyNameIO);
-
 
   bool operator<(const DataStruct& lhs, const DataStruct& rhs);
 }
