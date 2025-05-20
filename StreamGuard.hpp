@@ -16,6 +16,7 @@ namespace holodilov
         std::basic_ios< char >& ios_;
         std::streamsize precision_;
         std::basic_ios< char >::fmtflags fmtFlags_;
+        char fill_;
     };
 }
 
