@@ -37,12 +37,13 @@ std::istream& holodilov::operator>>(std::istream& is, DataStruct& dataStruct)
         }
         else if (!isSecondKeyGot && keyNameIO.keyNameNumber == '2') {
             isSecondKeyGot = true;
+            manipulator::CmpLspIO cmpLspIO { dataStruct.key2 };
+            is >> cmpLspIO;
         }
         else if (!isThirdKeyGot && keyNameIO.keyNameNumber == '3') {
             isThirdKeyGot = true;
             manipulator::StringIO stringIO { dataStruct.key3 };
             is >> stringIO;
-            dataStruct.key3 = stringIO.value;
         }
         else {
             is.setstate(std::ios::failbit);
@@ -97,19 +98,18 @@ std::istream& holodilov::operator>>(std::istream& is, manipulator::UllOctIO& ull
     }
     StreamGuard streamGuard(is);
 
-    unsigned long long ull = 0ull;
-    is >> ull;
-    if (!is) {
-        is.setstate(std::ios::failbit);
+    manipulator::CharIO octPrefixCharIO{ '0' };
+    is >> octPrefixCharIO;
+    if (!is)
+    {
         return is;
     }
+
+    unsigned long long ull = 0ull;
+    is >> ull;
     std::stringstream strStream;
     strStream << ull;
     std::string strUll = strStream.str();
-    if (strUll.size() <= 1 || strUll[0] != '0') {
-        is.setstate(std::ios::failbit);
-        return is;
-    }
     std::string allowedDigits = "01234567";
     for (int i = 1; i < strUll.size(); ++i) {
         bool isAllowed = false;
@@ -124,8 +124,11 @@ std::istream& holodilov::operator>>(std::istream& is, manipulator::UllOctIO& ull
             return is;
         }
     }
-    ullOctIO.value = ull;
 
+    manipulator::CharIO uCharIO{ 'u' };
+    manipulator::CharIO lCharIO{ 'l' };
+    is >> uCharIO >> lCharIO >> lCharIO;
+    ullOctIO.value = ull;
     return is;
 }
 
@@ -158,6 +161,10 @@ std::istream& holodilov::operator>>(std::istream& is, manipulator::CmpLspIO& cmp
         return is;
     }
     is >> closingBracketCharIO;
+    if (!is)
+    {
+        return is;
+    }
 
     cmpLspIO.value = std::complex< double >(double1, double2);
     return is;
@@ -180,7 +187,6 @@ std::istream& holodilov::operator>>(std::istream& is, manipulator::StringIO& str
     return is;
 }
 
-
 std::ostream& holodilov::operator<<(std::ostream& os, const DataStruct& data)
 {
     std::ostream::sentry s(os);
@@ -194,12 +200,6 @@ std::ostream& holodilov::operator<<(std::ostream& os, const DataStruct& data)
     os << manipulator::KeyNameIO{ '1' } << " " << std::oct << data.key1 << ":";
     os << manipulator::KeyNameIO{ '2' } << " #c(" << std::setprecision(1) << data.key2.real() << " " << data.key2.imag() << "):";
     os << manipulator::KeyNameIO{ '3' } << " \"" << data.key3 << "\":)\n";
-
-    // os << "(:";
-    // os << manipulator::KeyNameIO{ '1' } << " " << manipulator::UllOctIO{ data.key1 } << ":";
-    // os << manipulator::KeyNameIO{ '2' } << " " << manipulator::CmpLspIO(data.key2) << ":";
-    // os << manipulator::KeyNameIO{ '3' } << " " << manipulator::StringIO{ data.key3 } << ":)\n";
-    // os << "(:key1 " << data.key1 << ":key2 " << data.key2 << ":key3 " << data.key3 << ":)\n";
     return os;
 }
 
@@ -214,44 +214,6 @@ std::ostream& holodilov::operator<<(std::ostream& os, const manipulator::KeyName
     os << "key" << keyNameIO.keyNameNumber;
     return os;
 }
-
-std::ostream& holodilov::operator<<(std::ostream& os, const manipulator::UllOctIO& ullOctIO) {
-    std::ostream::sentry s(os);
-    if (!s)
-    {
-        return os;
-    }
-    StreamGuard streamGuard(os);
-    os << '0' << ullOctIO.value << "ull";
-    return os;
-}
-
-std::ostream& holodilov::operator<<(std::ostream& os, const manipulator::CmpLspIO& cmpLspIO) {
-    std::ostream::sentry s(os);
-    if (!s)
-    {
-        return os;
-    }
-    StreamGuard streamGuard(os);
-    os << "#c(";
-    os << cmpLspIO.value.real();
-    os << " ";
-    os << cmpLspIO.value.imag();
-    os << ")";
-    return os;
-}
-
-std::ostream& holodilov::operator<<(std::ostream& os, const manipulator::StringIO& stringIO) {
-    std::ostream::sentry s(os);
-    if (!s)
-    {
-        return os;
-    }
-    StreamGuard streamGuard(os);
-    os << "\"" << stringIO.value << "\"";
-    return os;
-}
-
 
 bool holodilov::operator<(const DataStruct& lhs, const DataStruct& rhs)
 {
